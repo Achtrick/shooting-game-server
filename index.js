@@ -78,8 +78,6 @@ io.on("connection", (socket) => {
       }
     }
 
-    console.log(available);
-
     if (available.isFull) {
       io.to([available.playerA, available.playerB]).emit(
         "MATCH_FOUND",
@@ -88,10 +86,20 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("LEAVE_ROOM", (id) => {
+    let match = findRoomByPlayerId(id);
+    if (match) {
+      io.to([match.playerA, match.playerB]).emit("OPPONENT_DISCONNECTED");
+      rooms.delete(match.id);
+    }
+  });
+
   socket.on("MOVE", (token) => {
     const [id, direction] = token.split("|");
     let match = findRoomByPlayerId(id);
-    io.to([match.playerA, match.playerB]).emit("MOVE", direction);
+    if (match) {
+      io.to([match.playerA, match.playerB]).emit("MOVE", direction);
+    }
   });
 
   // socket.on("SHOOT", ({ playerId, direction }) => {});
