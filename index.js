@@ -66,11 +66,6 @@ io.on("connection", (socket) => {
           playerA: id,
           playerB: "",
           isFull: false,
-          match: {
-            rounds: 3,
-            scoreA: 0,
-            scoreB: 0,
-          },
         };
 
         rooms.set(id, data);
@@ -101,8 +96,6 @@ io.on("connection", (socket) => {
       io.to([match.playerA, match.playerB]).emit("MOVE", direction);
     }
   });
-
-  // socket.on("SHOOT", ({ playerId, direction }) => {});
 });
 
 const findAvailableRoom = () => {
