@@ -89,11 +89,11 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("MOVE", (token) => {
+  socket.on("KEY_HELD", (token) => {
     const [id, direction] = token.split("|");
     let match = findRoomByPlayerId(id);
     if (match) {
-      io.to([match.playerA, match.playerB]).emit("MOVE", {
+      io.to([match.playerA, match.playerB]).emit("KEY_HELD", {
         playerId: id,
         direction: direction,
       });
