@@ -55,7 +55,6 @@ io.on("connection", (socket) => {
 
     if (!available) {
       available = payload.friendly ? null : findAvailableRoom(payload.matchId);
-
       if (available) {
         available.playerB = payload.playerId;
         available.isFull = true;
@@ -67,6 +66,10 @@ io.on("connection", (socket) => {
           playerB: "",
           isFull: false,
         };
+
+        if (payload.friendly) {
+          data.friendly = true;
+        }
 
         rooms.set(payload.playerId, data);
         available = data;
@@ -107,7 +110,7 @@ const findAvailableRoom = (matchId) => {
       if (data.playerA === matchId) {
         return data;
       }
-    } else if (!data.isFull) {
+    } else if (!data.isFull && !data.friendly) {
       return data;
     }
   }
