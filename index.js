@@ -48,27 +48,27 @@ export const io = new Server(soc, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("JOIN_ROOM", (id) => {
-    socket.join(id);
+  socket.on("JOIN_ROOM", (payload) => {
+    socket.join(payload.playerId);
 
-    let available = findRoomByPlayerId(id);
+    let available = findRoomByPlayerId(payload.playerId);
 
     if (!available) {
-      available = findAvailableRoom();
+      available = payload.friendly ? null : findAvailableRoom(payload.matchId);
 
       if (available) {
-        available.playerB = id;
+        available.playerB = payload.playerId;
         available.isFull = true;
         rooms.set(available.id, available);
       } else {
         const data = {
-          id: id,
-          playerA: id,
+          id: payload.playerId,
+          playerA: payload.playerId,
           playerB: "",
           isFull: false,
         };
 
-        rooms.set(id, data);
+        rooms.set(payload.playerId, data);
         available = data;
       }
     }
@@ -101,9 +101,13 @@ io.on("connection", (socket) => {
   });
 });
 
-const findAvailableRoom = () => {
+const findAvailableRoom = (matchId) => {
   for (const [_, data] of rooms.entries()) {
-    if (!data.isFull) {
+    if (matchId) {
+      if (data.playerA === matchId) {
+        return data;
+      }
+    } else if (!data.isFull) {
       return data;
     }
   }
