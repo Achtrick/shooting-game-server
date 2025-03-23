@@ -102,6 +102,12 @@ io.on("connection", (socket) => {
       });
     }
   });
+
+  // FOR ALAHIBBA MOSQUE
+  socket.on("UPDATE", () => {
+    io.emit("UPDATE");
+  });
+  //
 });
 
 const findAvailableRoom = (matchId) => {
